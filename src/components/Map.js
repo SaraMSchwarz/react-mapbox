@@ -29,33 +29,66 @@ const Map = () => {
     });
 
     // add NDVI tile as a layer (hardcoded to location and zoom level)
-    map.on('load', function () {
-        map.addSource('NDVI', {
-          type: 'raster',
-          url: url
-        });
-        map.addLayer({
-          'id': 'NDVI',
-          'type': 'raster',
-          'source': 'NDVI',
-          'layout': {
-            'visibility': 'visible'
-          }
-        })
-    //add GeoJSON data layer to map
-    map.addSource('Data', {
-        type: 'geojson',
-        data: 'https://gxlu1hg02b.execute-api.us-east-1.amazonaws.com/default/mockGeoJSONAPI'
-    });
-    map.addLayer({
-        'id': 'Data',
-        'type': 'fill',
-        'source': 'Data',
-        'layout': {
-            'visibility': 'visible'
-          }
-      })    
+    map.on("load", function () {
+      map.addSource("NDVI", {
+        type: "raster",
+        url: url,
       });
+      map.addLayer({
+        id: "NDVI",
+        type: "raster",
+        source: "NDVI",
+        layout: {
+          visibility: "visible",
+        },
+      });
+      //add GeoJSON data layer to map
+      map.addSource("json", {
+        type: "geojson",
+        data:
+          "https://gxlu1hg02b.execute-api.us-east-1.amazonaws.com/default/mockGeoJSONAPI",
+      });
+      map.addLayer({
+        id: "json",
+        type: "fill",
+        source: "json",
+        layout: {
+          visibility: "visible",
+        },
+      });
+    });
+
+    // Layer IDs
+    let toggleableLayerIds = ["NDVI", "json"];
+
+    // Toggle button for each layer
+    for (let i = 0; i < toggleableLayerIds.length; i++) {
+      let id = toggleableLayerIds[i];
+
+      let link = document.createElement("a");
+      link.href = "#";
+      link.className = "active";
+      link.textContent = id;
+
+      link.onclick = function (e) {
+        let clickedLayer = this.textContent;
+        e.preventDefault();
+        e.stopPropagation();
+
+        let visibility = map.getLayoutProperty(clickedLayer, "visibility");
+
+        if (visibility === "visible") {
+          map.setLayoutProperty(clickedLayer, "visibility", "none");
+          this.className = "";
+        } else {
+          this.className = "active";
+          map.setLayoutProperty(clickedLayer, "visibility", "visible");
+        }
+      };
+
+      let layers = document.getElementById("menu");
+      layers.appendChild(link);
+    }
 
     map.addControl(new mapboxgl.NavigationControl(), "top-right");
 
@@ -69,6 +102,11 @@ const Map = () => {
 
   return (
     <div>
+      <nav id="menu"></nav>
+      <div id="map"></div>
+      <div className="sidebarStyle">
+        <div>Zoom: {zoom}</div>
+      </div>
       <div className="map-container" ref={mapContainerRef} />
     </div>
   );

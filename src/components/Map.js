@@ -36,6 +36,19 @@ const Map = () => {
             'visibility': 'visible'
           }
         })
+    //add GeoJSON data layer to map
+    map.addSource('Data', {
+        type: 'geojson',
+        data: 'https://gxlu1hg02b.execute-api.us-east-1.amazonaws.com/default/mockGeoJSONAPI '
+    });
+    map.addLayer({
+        'id': 'Data',
+        'type': 'fill',
+        'source': 'Data',
+        'layout': {
+            'visibility': 'visible'
+          }
+      })    
       });
 
     map.addControl(new mapboxgl.NavigationControl(), "top-right");

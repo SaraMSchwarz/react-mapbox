@@ -22,6 +22,22 @@ const Map = () => {
       minZoom: 10,
     });
 
+    // add NDVI tile as a layer (hardcoded to location and zoom level)
+    map.on('load', function () {
+        map.addSource('NDVI', {
+          type: 'raster',
+          url: 'https://tiles.earthoptics.com/ndvi/13/-92.65880554936408/42.704868874031554'
+        });
+        map.addLayer({
+          'id': 'NDVI',
+          'type': 'raster',
+          'source': 'NDVI',
+          'layout': {
+            'visibility': 'visible'
+          }
+        })
+      });
+
     map.addControl(new mapboxgl.NavigationControl(), "top-right");
 
     map.on("move", () => {

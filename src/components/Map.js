@@ -12,6 +12,12 @@ const Map = () => {
   const [lat, setLat] = useState(42.704868874031554);
   const [zoom, setZoom] = useState(13);
 
+  let z = 13;
+  let x = -92.65880554936408;
+  let y = 42.704868874031554;
+
+  let url = `https://tiles.earthoptics.com/ndvi/${z}/${x}/${y}`;
+
   useEffect(() => {
     const map = new mapboxgl.Map({
       container: mapContainerRef.current,
@@ -26,7 +32,7 @@ const Map = () => {
     map.on('load', function () {
         map.addSource('NDVI', {
           type: 'raster',
-          url: 'https://tiles.earthoptics.com/ndvi/13/-92.65880554936408/42.704868874031554'
+          url: url
         });
         map.addLayer({
           'id': 'NDVI',
@@ -39,7 +45,7 @@ const Map = () => {
     //add GeoJSON data layer to map
     map.addSource('Data', {
         type: 'geojson',
-        data: 'https://gxlu1hg02b.execute-api.us-east-1.amazonaws.com/default/mockGeoJSONAPI '
+        data: 'https://gxlu1hg02b.execute-api.us-east-1.amazonaws.com/default/mockGeoJSONAPI'
     });
     map.addLayer({
         'id': 'Data',

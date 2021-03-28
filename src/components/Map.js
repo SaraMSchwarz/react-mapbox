@@ -58,38 +58,6 @@ const Map = () => {
       });
     });
 
-    // Layer IDs
-    let toggleableLayerIds = ["NDVI", "json"];
-
-    // Toggle button for each layer
-    for (let i = 0; i < toggleableLayerIds.length; i++) {
-      let id = toggleableLayerIds[i];
-
-      let link = document.createElement("a");
-      link.href = "#";
-      link.className = "active";
-      link.textContent = id;
-
-      link.onclick = function (e) {
-        let clickedLayer = this.textContent;
-        e.preventDefault();
-        e.stopPropagation();
-
-        let visibility = map.getLayoutProperty(clickedLayer, "visibility");
-
-        if (visibility === "visible") {
-          map.setLayoutProperty(clickedLayer, "visibility", "none");
-          this.className = "";
-        } else {
-          this.className = "active";
-          map.setLayoutProperty(clickedLayer, "visibility", "visible");
-        }
-      };
-
-      let layers = document.getElementById("menu");
-      layers.appendChild(link);
-    }
-
     map.addControl(new mapboxgl.NavigationControl(), "top-right");
 
     map.on("move", () => {
@@ -97,6 +65,44 @@ const Map = () => {
       setLat(map.getCenter().lat.toFixed(4));
       setZoom(map.getZoom().toFixed(2));
     });
+
+    map.on("idle", function () {
+      if (map.getLayer("NDVI") && map.getLayer("json")) {
+        let toggleableLayerIds = ["NDVI", "json"];
+        for (let i = 0; i < toggleableLayerIds.length; i++) {
+          let id = toggleableLayerIds[i];
+          if (!document.getElementById(id)) {
+            let link = document.createElement("a");
+            link.id = id;
+            link.href = "#";
+            link.textContent = id;
+            link.className = "active";
+            link.onclick = function (e) {
+              let clickedLayer = this.textContent;
+              e.preventDefault();
+              e.stopPropagation();
+
+              let visibility = map.getLayoutProperty(
+                clickedLayer,
+                "visibility"
+              );
+
+              if (visibility === "visible") {
+                map.setLayoutProperty(clickedLayer, "visibility", "none");
+                this.className = "";
+              } else {
+                this.className = "active";
+                map.setLayoutProperty(clickedLayer, "visibility", "visible");
+              }
+            };
+
+            let layers = document.getElementById("menu");
+            layers.appendChild(link);
+          }
+        }
+      }
+    });
+
     return () => map.remove();
   }, []);
 
